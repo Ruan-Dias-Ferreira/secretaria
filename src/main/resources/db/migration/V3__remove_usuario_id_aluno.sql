@@ -1,0 +1,1 @@
+ALTER TABLE aluno DROP COLUMN IF EXISTS usuario_id;

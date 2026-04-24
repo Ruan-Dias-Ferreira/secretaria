@@ -1,0 +1,2 @@
+ALTER TABLE documento DROP COLUMN IF EXISTS arquivo;
+ALTER TABLE documento DROP COLUMN IF EXISTS status;

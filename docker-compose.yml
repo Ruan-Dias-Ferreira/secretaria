@@ -1,0 +1,15 @@
+services:
+  db:
+    image: postgres:16
+    container_name: Db_secretaria
+    environment:
+      - POSTGRES_USER=MrRDF
+      - POSTGRES_PASSWORD=MrRDF180402
+      - POSTGRES_DB=Secretaria
+    ports:
+      - "1804:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
