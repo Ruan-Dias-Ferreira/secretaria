@@ -1,6 +1,7 @@
 package com.escola.secretaria.controller;
 
 import com.escola.secretaria.dto.request.NotaRequest;
+import com.escola.secretaria.dto.response.BoletimResponse;
 import com.escola.secretaria.dto.response.NotaResponse;
 import com.escola.secretaria.service.NotaService;
 import jakarta.validation.Valid;
@@ -23,6 +24,12 @@ public class NotaController {
     @GetMapping
     public ResponseEntity<List<NotaResponse>> findAll() {
         return ResponseEntity.ok(notaService.findAll());
+    }
+
+    @GetMapping("/boletim/{alunoId}")
+    @PreAuthorize("hasRole('SECRETARIA')")
+    public ResponseEntity<List<BoletimResponse>> getBoletim(@PathVariable Long alunoId) {
+        return ResponseEntity.ok(notaService.getBoletim(alunoId));
     }
 
     @GetMapping("/{id}")
