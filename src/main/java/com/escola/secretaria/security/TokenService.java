@@ -1,6 +1,5 @@
 package com.escola.secretaria.security;
 
-
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTCreationException;
@@ -17,18 +16,21 @@ import java.time.ZoneOffset;
 public class TokenService {
     @Value("${api.security.token.secret}")
     private String secret;
+
     public String generateToken(Usuario user) {
         try {
             Algorithm algorithm = Algorithm.HMAC256(secret);
             return JWT.create()
                     .withIssuer("secretaria")
                     .withSubject(user.getLogin())
+                    .withClaim("role", user.getRole().name())
                     .withExpiresAt(genExpirationDate())
                     .sign(algorithm);
         } catch (JWTCreationException exception) {
             throw new RuntimeException("Erro ao gerar o token JWT", exception);
         }
     }
+
     public String validateToken(String token) {
         try {
             Algorithm algorithm = Algorithm.HMAC256(secret);
@@ -42,6 +44,7 @@ public class TokenService {
             return "";
         }
     }
+
     private Instant genExpirationDate() {
         return LocalDateTime.now().plusHours(1).toInstant(ZoneOffset.of("-03:00"));
     }

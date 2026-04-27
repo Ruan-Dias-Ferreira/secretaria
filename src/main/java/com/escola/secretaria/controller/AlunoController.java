@@ -15,7 +15,7 @@ import java.util.List;
 
 @RestController
 @PreAuthorize("hasAnyRole('SECRETARIA')")
-@RequestMapping("/alunos")
+@RequestMapping("/aluno")
 @AllArgsConstructor
 public class AlunoController {
 
@@ -26,6 +26,7 @@ public class AlunoController {
     public ResponseEntity<List<FrequenciaResumoResponse>> getFrequencias(@PathVariable Long id) {
         return ResponseEntity.ok(alunoService.getFrequenciasPorAluno(id));
     }
+
     @GetMapping
     public ResponseEntity<List<AlunoResponse>> findAll() {
         return ResponseEntity.ok(alunoService.findAll());
@@ -43,7 +44,7 @@ public class AlunoController {
 
     @PutMapping("/{id}")
     public ResponseEntity<AlunoResponse> update(@PathVariable Long id,
-                                                @RequestBody @Valid AlunoRequest request) {
+            @RequestBody @Valid AlunoRequest request) {
         return ResponseEntity.ok(alunoService.update(id, request));
     }
 
