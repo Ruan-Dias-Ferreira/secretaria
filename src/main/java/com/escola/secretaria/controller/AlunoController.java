@@ -1,6 +1,7 @@
 package com.escola.secretaria.controller;
 
 import com.escola.secretaria.dto.request.AlunoRequest;
+import com.escola.secretaria.dto.response.AlunoDetalheResponse;
 import com.escola.secretaria.dto.response.AlunoResponse;
 import com.escola.secretaria.dto.response.FrequenciaResumoResponse;
 import com.escola.secretaria.service.AlunoService;
@@ -33,7 +34,7 @@ public class AlunoController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<AlunoResponse> findById(@PathVariable Long id) {
+    public ResponseEntity<AlunoDetalheResponse> findById(@PathVariable Long id) {
         return ResponseEntity.ok(alunoService.findById(id));
     }
 

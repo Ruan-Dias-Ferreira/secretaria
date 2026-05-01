@@ -6,6 +6,7 @@ import com.escola.secretaria.domain.Disciplina;
 import com.escola.secretaria.domain.Frequencia;
 import com.escola.secretaria.domain.enums.SituacaoFrequencia;
 import com.escola.secretaria.dto.request.AlunoRequest;
+import com.escola.secretaria.dto.response.AlunoDetalheResponse;
 import com.escola.secretaria.dto.response.AlunoResponse;
 import com.escola.secretaria.dto.response.BoletimResponse;
 import com.escola.secretaria.dto.response.FrequenciaResumoResponse;
@@ -72,23 +73,42 @@ public class AlunoService {
     }
 
     @Transactional(readOnly = true)
-    public AlunoResponse findById(Long id) {
+    public AlunoDetalheResponse findById(Long id) {
         return alunoRepository.findById(id)
-                .map(alunoMapper::toResponse)
+                .map(alunoMapper::toDetalheResponse)
                 .orElseThrow(() -> new RecursoNaoEncontradoException("Aluno não encontrado. Id: " + id));
     }
 
     @Transactional
     public AlunoResponse save(AlunoRequest request) {
         Aluno aluno = alunoMapper.toEntity(request);
+        normalizar(aluno);
         return alunoMapper.toResponse(alunoRepository.save(aluno));
     }
+
+    private void normalizar(Aluno a) {
+        if (a.getEmail() != null && a.getEmail().isBlank()) a.setEmail(null);
+        if (a.getRg() != null && a.getRg().isBlank()) a.setRg(null);
+        if (a.getTituloEleitor() != null && a.getTituloEleitor().isBlank()) a.setTituloEleitor(null);
+        if (a.getTelefone() != null && a.getTelefone().isBlank()) a.setTelefone(null);
+        if (a.getMae() != null && isResponsavelVazio(a.getMae())) a.setMae(null);
+        if (a.getPai() != null && isResponsavelVazio(a.getPai())) a.setPai(null);
+        if (a.getResponsavelLegal() != null && isResponsavelVazio(a.getResponsavelLegal())) a.setResponsavelLegal(null);
+    }
+
+    private boolean isResponsavelVazio(com.escola.secretaria.domain.Responsavel r) {
+        return blank(r.getNome()) && blank(r.getCpf()) && blank(r.getRg())
+                && blank(r.getTituloEleitor()) && blank(r.getTelefone());
+    }
+
+    private boolean blank(String s) { return s == null || s.isBlank(); }
 
     @Transactional
     public AlunoResponse update(Long id, AlunoRequest request) {
         Aluno aluno = alunoRepository.findById(id)
                 .orElseThrow(() -> new RecursoNaoEncontradoException("Aluno não encontrado. Id: " + id));
         alunoMapper.updateEntity(request, aluno);
+        normalizar(aluno);
         return alunoMapper.toResponse(alunoRepository.save(aluno));
     }
 

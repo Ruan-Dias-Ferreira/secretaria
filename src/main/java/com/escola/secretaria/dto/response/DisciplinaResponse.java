@@ -5,6 +5,8 @@ public record DisciplinaResponse(
         String nome,
         int cargaHoraria,
         Long turmaId,
+        Integer turmaAnoLetivo,
+        Boolean turmaOperavel,
         Long professorId,
         String professorLogin
 ) {

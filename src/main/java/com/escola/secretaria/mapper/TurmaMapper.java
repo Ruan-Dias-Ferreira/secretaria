@@ -9,10 +9,15 @@ import org.mapstruct.MappingTarget;
 
 @Mapper(componentModel = "spring")
 public interface TurmaMapper {
+    @Mapping(target = "operavel",
+            expression = "java(turma.getAnoLetivo() == java.time.LocalDate.now().getYear())")
     TurmaResponse toResponse(Turma turma);
-    @Mapping(target="id",ignore = true)
+
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "rematricula", ignore = true)
     Turma toEntity(TurmaRequest request);
 
-    @Mapping(target="id",ignore = true)
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "rematricula", ignore = true)
     void updateEntity(TurmaRequest request, @MappingTarget Turma turma);
 }

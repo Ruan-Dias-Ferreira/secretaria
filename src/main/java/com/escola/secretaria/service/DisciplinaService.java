@@ -25,6 +25,7 @@ public class DisciplinaService {
     private final DisciplinaMapper disciplinaMapper;
     private final TurmaRepository turmaRepository;
     private final UsuarioRepository usuarioRepository;
+    private final TurmaValidator turmaValidator;
 
     @Transactional(readOnly = true)
     public List<DisciplinaResponse> findAll() {
@@ -47,6 +48,7 @@ public class DisciplinaService {
         Disciplina disciplina = disciplinaMapper.toEntity(request);
         Turma turma = turmaRepository.findById(request.turmaId())
                 .orElseThrow(() -> new RecursoNaoEncontradoException("Turma não encontrada. Id: " + request.turmaId()));
+        turmaValidator.assertOperavel(turma);
         disciplina.setTurma(turma);
         return disciplinaMapper.toResponse(disciplinaRepository.save(disciplina));
     }
@@ -56,6 +58,14 @@ public class DisciplinaService {
         validarProfessor(request.professorId());
         Disciplina disciplina = disciplinaRepository.findById(id)
                 .orElseThrow(() -> new RecursoNaoEncontradoException("Disciplina não encontrada. Id: " + id));
+        turmaValidator.assertOperavel(disciplina.getTurma());
+        if (request.turmaId() != null && (disciplina.getTurma() == null
+                || !request.turmaId().equals(disciplina.getTurma().getId()))) {
+            Turma novaTurma = turmaRepository.findById(request.turmaId())
+                    .orElseThrow(() -> new RecursoNaoEncontradoException("Turma não encontrada. Id: " + request.turmaId()));
+            turmaValidator.assertOperavel(novaTurma);
+            disciplina.setTurma(novaTurma);
+        }
         disciplinaMapper.updateEntity(request, disciplina);
         return disciplinaMapper.toResponse(disciplinaRepository.save(disciplina));
     }

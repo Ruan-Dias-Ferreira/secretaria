@@ -35,6 +35,7 @@ public class NotaService {
     private final AlunoRepository alunoRepository;
     private final DisciplinaRepository disciplinaRepository;
     private final MatriculaService matriculaService;
+    private final TurmaValidator turmaValidator;
 
     private boolean isStatusEspecial(StatusMatricula status) {
         return status == StatusMatricula.DESISTENTE || status == StatusMatricula.TRANSFERIDO;
@@ -134,6 +135,7 @@ public class NotaService {
         Disciplina disciplina=disciplinaRepository.findById(request.disciplinaId())
                 .orElseThrow(()->new RecursoNaoEncontradoException("Disciplina não encontrada. Id: " + request.disciplinaId()));
         validarAcessoDisciplina(disciplina);
+        turmaValidator.assertOperavel(disciplina.getTurma());
         nota.setDisciplina(disciplina);
         nota.setAluno(aluno);
         return  notaMapper.toResponse(notaRepository.save(nota));
@@ -149,6 +151,7 @@ public class NotaService {
         Disciplina disciplina=disciplinaRepository.findById(request.disciplinaId())
                 .orElseThrow(()->new RecursoNaoEncontradoException("Disciplina não encontrada. Id: " + request.disciplinaId()));
         validarAcessoDisciplina(disciplina);
+        turmaValidator.assertOperavel(disciplina.getTurma());
         nota.setDisciplina(disciplina);
         nota.setAluno(aluno);
         return  notaMapper.toResponse(notaRepository.save(nota));

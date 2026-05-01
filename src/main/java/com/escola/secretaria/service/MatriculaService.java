@@ -148,6 +148,54 @@ public class MatriculaService {
         return matriculaMapper.toResponse(matriculaRepository.save(matricula));
     }
 
+    // ─── Realocação interna (mesma escola, mesmo ano em andamento) ─────────
+
+    @Transactional
+    public MatriculaResponse realocar(com.escola.secretaria.dto.request.RealocacaoRequest request) {
+        int anoAtual = LocalDate.now().getYear();
+
+        Aluno aluno = alunoRepository.findById(request.alunoId())
+                .orElseThrow(() -> new RecursoNaoEncontradoException(
+                        "Aluno não encontrado. Id: " + request.alunoId()));
+
+        Matricula matricula = matriculaRepository
+                .findByAlunoIdAndAnoLetivo(aluno.getId(), anoAtual)
+                .orElseThrow(() -> new RegraDeNegocioException(
+                        "Aluno não possui matrícula ativa no ano " + anoAtual + " para realocar."));
+
+        if (matricula.getStatus() != StatusMatricula.ATIVA) {
+            throw new RegraDeNegocioException(
+                    "Matrícula do aluno não está ATIVA. Status atual: " + matricula.getStatus());
+        }
+
+        Turma novaTurma = turmaRepository.findById(request.novaTurmaId())
+                .orElseThrow(() -> new RecursoNaoEncontradoException(
+                        "Turma destino não encontrada. Id: " + request.novaTurmaId()));
+
+        if (novaTurma.getAnoLetivo() != anoAtual) {
+            throw new RegraDeNegocioException(
+                    "Realocação só é permitida para turmas do ano em andamento (" + anoAtual + ").");
+        }
+        if (novaTurma.isRematricula()) {
+            throw new RegraDeNegocioException(
+                    "Não é possível realocar para turma de rematrícula. "
+                            + "Cancele a rematrícula do aluno e refaça-a na turma correta.");
+        }
+        if (matricula.getTurma() != null && matricula.getTurma().getId().equals(novaTurma.getId())) {
+            throw new RegraDeNegocioException(
+                    "Aluno já está nessa turma. Selecione uma turma diferente.");
+        }
+        if (matricula.getTurma() != null && matricula.getTurma().isRematricula()) {
+            throw new RegraDeNegocioException(
+                    "Matrícula de origem é de rematrícula. Use o fluxo de cancelar/refazer rematrícula.");
+        }
+
+        matricula.setTurma(novaTurma);
+        log.info("Realocação alunoId={} novaTurmaId={} ano={}",
+                aluno.getId(), novaTurma.getId(), anoAtual);
+        return matriculaMapper.toResponse(matriculaRepository.save(matricula));
+    }
+
     // ─── Rematrícula ───────────────────────────────────────────────────────
 
     @Transactional(readOnly = true)
@@ -261,7 +309,7 @@ public class MatriculaService {
         }
     }
 
-    private boolean janelaAberta() {
+    public boolean janelaAberta() {
         MonthDay hoje = MonthDay.from(LocalDate.now());
         if (!janelaInicio.isAfter(janelaFim)) {
             return !hoje.isBefore(janelaInicio) && !hoje.isAfter(janelaFim);
@@ -277,6 +325,11 @@ public class MatriculaService {
             throw new RegraDeNegocioException(
                     "Turma destino pertence ao ano " + turma.getAnoLetivo()
                             + ", mas a rematrícula é para " + anoDestino);
+        }
+        if (!turma.isRematricula()) {
+            throw new RegraDeNegocioException(
+                    "Turma destino não foi cadastrada como turma de rematrícula. "
+                            + "Selecione uma turma criada durante o período de rematrícula.");
         }
         return turma;
     }

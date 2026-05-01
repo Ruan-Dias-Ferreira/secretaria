@@ -5,6 +5,8 @@ public record TurmaResponse(
         String turno,
         int anoLetivo,
         String curso,
-        Long id
+        Long id,
+        boolean rematricula,
+        boolean operavel
 ) {
 }

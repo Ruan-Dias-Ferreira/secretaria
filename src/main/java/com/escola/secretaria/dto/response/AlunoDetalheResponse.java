@@ -1,16 +1,24 @@
 package com.escola.secretaria.dto.response;
 
+import com.escola.secretaria.domain.CertidaoNascimento;
+import com.escola.secretaria.domain.Endereco;
+import com.escola.secretaria.domain.Responsavel;
+
 import java.time.LocalDate;
 
 public record AlunoDetalheResponse(
-                String nome,
-                String cpf,
-                String rg,
-                LocalDate dataNascimento,
-                String email,
-                String telefone,
-                String endereco,
-                String nomeMae,
-                String nomePai,
-                Long id) {
-}
+        Long id,
+        String nome,
+        String cpf,
+        String rg,
+        String tituloEleitor,
+        LocalDate dataNascimento,
+        String email,
+        String telefone,
+        String telefoneResponsavel,
+        Endereco endereco,
+        CertidaoNascimento certidaoNascimento,
+        Responsavel mae,
+        Responsavel pai,
+        Responsavel responsavelLegal
+) {}

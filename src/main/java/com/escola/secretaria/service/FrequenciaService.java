@@ -4,6 +4,7 @@ import com.escola.secretaria.domain.Aluno;
 import com.escola.secretaria.domain.Disciplina;
 import com.escola.secretaria.domain.Frequencia;
 import com.escola.secretaria.domain.Matricula;
+import com.escola.secretaria.domain.MotivoFalta;
 import com.escola.secretaria.domain.Usuario;
 import com.escola.secretaria.domain.enums.Role;
 import com.escola.secretaria.domain.enums.StatusMatricula;
@@ -35,6 +36,7 @@ public class FrequenciaService {
     private final DisciplinaRepository disciplinaRepository;
     private final MatriculaRepository matriculaRepository;
     private final EventoRepository eventoRepository;
+    private final TurmaValidator turmaValidator;
 
     private Usuario getUsuarioLogado() {
         return (Usuario) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -62,10 +64,19 @@ public class FrequenciaService {
     }
 
     private void validarAnoLetivoEditavel(LocalDate data) {
-        int anoAtual = LocalDate.now().getYear();
+        LocalDate hoje = LocalDate.now();
+        int anoAtual = hoje.getYear();
         if (data.getYear() < anoAtual) {
             throw new IllegalArgumentException(
                     "Ano letivo encerrado. Não é possível editar frequência de " + data.getYear() + ".");
+        }
+        if (data.getYear() > anoAtual) {
+            throw new IllegalArgumentException(
+                    "Ano letivo " + data.getYear() + " ainda não iniciou.");
+        }
+        if (data.isAfter(hoje)) {
+            throw new IllegalArgumentException(
+                    "Data futura: frequência só pode ser lançada para hoje ou datas passadas.");
         }
     }
 
@@ -118,6 +129,7 @@ public class FrequenciaService {
             disciplina = disciplinaRepository.findById(request.disciplinaId())
                     .orElseThrow(() -> new RecursoNaoEncontradoException("Disciplina não encontrada. Id: " + request.disciplinaId()));
             validarAcessoDisciplina(disciplina);
+            turmaValidator.assertOperavel(disciplina.getTurma());
         }
 
         Frequencia frequencia = frequenciaRepository
@@ -146,6 +158,7 @@ public class FrequenciaService {
             disciplina = disciplinaRepository.findById(request.disciplinaId())
                     .orElseThrow(() -> new RecursoNaoEncontradoException("Disciplina não encontrada. Id: " + request.disciplinaId()));
             validarAcessoDisciplina(disciplina);
+            turmaValidator.assertOperavel(disciplina.getTurma());
         }
         frequenciaMapper.updateEntity(request, frequencia);
         frequencia.setAluno(aluno);
@@ -166,9 +179,11 @@ public class FrequenciaService {
     @Transactional(readOnly = true)
     public ResumoDia resumoDia(LocalDate data) {
         long ativos = matriculaRepository.countByStatus(StatusMatricula.ATIVA);
+        long dispensados = frequenciaRepository.countByDataAndMotivo(data, MotivoFalta.DISPENSADO);
+        long base = ativos - dispensados;
         long presentes = frequenciaRepository.countByDataAndPresenteTrue(data);
-        double pct = ativos > 0 ? (presentes * 100.0) / ativos : 0.0;
-        return new ResumoDia(data, ativos, presentes, pct);
+        double pct = base > 0 ? (presentes * 100.0) / base : 0.0;
+        return new ResumoDia(data, base, presentes, pct);
     }
 
     /**
@@ -187,11 +202,17 @@ public class FrequenciaService {
             if (eventoRepository.existsByData(d)) continue;
             diasLetivos++;
         }
-        if (diasLetivos == 0) return -1.0;
 
-        long presencas = frequenciaRepository.findByAlunoAndDataBetween(aluno, inicio, fim).stream()
+        var registros = frequenciaRepository.findByAlunoAndDataBetween(aluno, inicio, fim);
+        long dispensados = registros.stream()
+                .filter(f -> f.getMotivo() == MotivoFalta.DISPENSADO)
+                .count();
+        long base = diasLetivos - dispensados;
+        if (base <= 0) return -1.0;
+
+        long presencas = registros.stream()
                 .filter(f -> Boolean.TRUE.equals(f.getPresente()))
                 .count();
-        return (presencas * 100.0) / diasLetivos;
+        return (presencas * 100.0) / base;
     }
 }

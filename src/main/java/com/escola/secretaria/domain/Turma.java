@@ -19,4 +19,7 @@ public class Turma {
     private int anoLetivo;
     private String turno;
     private String curso;
+
+    @Column(nullable = false)
+    private boolean rematricula;
 }

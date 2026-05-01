@@ -19,6 +19,9 @@ public abstract class DisciplinaMapper {
     protected UsuarioRepository usuarioRepository;
 
     @Mapping(target = "turmaId", source = "turma.id")
+    @Mapping(target = "turmaAnoLetivo", source = "turma.anoLetivo")
+    @Mapping(target = "turmaOperavel",
+            expression = "java(disciplina.getTurma() != null && disciplina.getTurma().getAnoLetivo() == java.time.LocalDate.now().getYear())")
     @Mapping(target = "professorId", source = "professor.id")
     @Mapping(target = "professorLogin", source = "professor.login")
     public abstract DisciplinaResponse toResponse(Disciplina disciplina);

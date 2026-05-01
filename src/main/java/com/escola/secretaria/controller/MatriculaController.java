@@ -2,6 +2,7 @@ package com.escola.secretaria.controller;
 
 import com.escola.secretaria.dto.request.MatriculaRequest;
 import com.escola.secretaria.dto.request.MatriculaStatusRequest;
+import com.escola.secretaria.dto.request.RealocacaoRequest;
 import com.escola.secretaria.dto.request.RematriculaRequest;
 import com.escola.secretaria.dto.response.MatriculaResponse;
 import com.escola.secretaria.dto.response.RematriculaJanelaResponse;
@@ -55,6 +56,11 @@ public class MatriculaController {
     public ResponseEntity<MatriculaResponse> updateStatus(@PathVariable Long id,
                                                           @RequestBody MatriculaStatusRequest request) {
         return ResponseEntity.ok(matriculaService.updateStatus(id, request));
+    }
+
+    @PostMapping("/realocacao")
+    public ResponseEntity<MatriculaResponse> realocar(@RequestBody @Valid RealocacaoRequest request) {
+        return ResponseEntity.ok(matriculaService.realocar(request));
     }
 
     // ─── Rematrícula ───────────────────────────────────────────────────────

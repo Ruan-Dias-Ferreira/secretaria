@@ -3,6 +3,7 @@ package com.escola.secretaria.repository;
 import com.escola.secretaria.domain.Aluno;
 import com.escola.secretaria.domain.Disciplina;
 import com.escola.secretaria.domain.Frequencia;
+import com.escola.secretaria.domain.MotivoFalta;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.time.LocalDate;
@@ -17,4 +18,5 @@ public interface FrequenciaRepository extends JpaRepository<Frequencia, Long> {
     List<Frequencia> findByAlunoAndDataBetween(Aluno aluno, LocalDate inicio, LocalDate fim);
     long deleteByData(LocalDate data);
     long countByDataAndPresenteTrue(LocalDate data);
+    long countByDataAndMotivo(LocalDate data, MotivoFalta motivo);
 }
