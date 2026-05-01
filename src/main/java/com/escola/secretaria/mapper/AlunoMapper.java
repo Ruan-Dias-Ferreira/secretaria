@@ -20,7 +20,20 @@ public interface AlunoMapper {
 
     @Mapping(source = "rematriculado", target = "rematriculado",
             qualifiedByName = "mapRematriculado")
+    @Mapping(target = "nomeResponsavel", expression = "java(resolveNomeResponsavel(aluno))")
     AlunoResponse toResponse(Aluno aluno);
+
+    default String resolveNomeResponsavel(Aluno a) {
+        if (a == null) return null;
+        if (a.getMae() != null && a.getMae().getNome() != null && !a.getMae().getNome().isBlank())
+            return a.getMae().getNome();
+        if (a.getPai() != null && a.getPai().getNome() != null && !a.getPai().getNome().isBlank())
+            return a.getPai().getNome();
+        if (a.getResponsavelLegal() != null && a.getResponsavelLegal().getNome() != null
+                && !a.getResponsavelLegal().getNome().isBlank())
+            return a.getResponsavelLegal().getNome();
+        return null;
+    }
 
     AlunoDetalheResponse toDetalheResponse(Aluno aluno);
 

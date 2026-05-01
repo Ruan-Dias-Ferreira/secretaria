@@ -16,6 +16,8 @@ public record AlunoRequest(
         String email,
         String telefone,
         @NotBlank String telefoneResponsavel,
+        String localNascimento,
+        String nacionalidade,
         @NotNull @Valid EnderecoDto endereco,
         @NotNull @Valid CertidaoNascimentoDto certidaoNascimento,
         @Valid ResponsavelDto mae,

@@ -5,13 +5,15 @@ public record ResponsavelDto(
         String cpf,
         String rg,
         String tituloEleitor,
-        String telefone
+        String telefone,
+        String profissao
 ) {
     public boolean isVazio() {
         return (nome == null || nome.isBlank())
                 && (cpf == null || cpf.isBlank())
                 && (rg == null || rg.isBlank())
                 && (tituloEleitor == null || tituloEleitor.isBlank())
-                && (telefone == null || telefone.isBlank());
+                && (telefone == null || telefone.isBlank())
+                && (profissao == null || profissao.isBlank());
     }
 }

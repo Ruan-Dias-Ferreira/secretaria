@@ -5,6 +5,7 @@ public record AlunoResponse(
         String nome,
         String cpf,
         String email,
+        String nomeResponsavel,
         RematriculadoResponse rematriculado
 ) {
 }

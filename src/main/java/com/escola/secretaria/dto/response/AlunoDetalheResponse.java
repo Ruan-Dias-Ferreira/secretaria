@@ -16,6 +16,8 @@ public record AlunoDetalheResponse(
         String email,
         String telefone,
         String telefoneResponsavel,
+        String localNascimento,
+        String nacionalidade,
         Endereco endereco,
         CertidaoNascimento certidaoNascimento,
         Responsavel mae,

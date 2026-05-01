@@ -5,6 +5,7 @@ import com.escola.secretaria.dto.request.MatriculaStatusRequest;
 import com.escola.secretaria.dto.request.RealocacaoRequest;
 import com.escola.secretaria.dto.request.RematriculaRequest;
 import com.escola.secretaria.dto.response.MatriculaResponse;
+import com.escola.secretaria.dto.response.MatriculaStatsResponse;
 import com.escola.secretaria.dto.response.RematriculaJanelaResponse;
 import com.escola.secretaria.dto.response.RematriculadoResponse;
 import com.escola.secretaria.service.MatriculaService;
@@ -26,8 +27,17 @@ public class MatriculaController {
     private final MatriculaService matriculaService;
 
     @GetMapping
-    public ResponseEntity<List<MatriculaResponse>> findAll() {
+    public ResponseEntity<List<MatriculaResponse>> findAll(
+            @RequestParam(value = "search", required = false) String search) {
+        if (search != null && !search.isBlank()) {
+            return ResponseEntity.ok(matriculaService.search(search));
+        }
         return ResponseEntity.ok(matriculaService.findAll());
+    }
+
+    @GetMapping("/stats")
+    public ResponseEntity<MatriculaStatsResponse> stats() {
+        return ResponseEntity.ok(matriculaService.stats());
     }
 
     @GetMapping("/{id}")

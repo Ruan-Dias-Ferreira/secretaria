@@ -9,6 +9,7 @@ import com.escola.secretaria.dto.request.MatriculaRequest;
 import com.escola.secretaria.dto.request.MatriculaStatusRequest;
 import com.escola.secretaria.dto.request.RematriculaRequest;
 import com.escola.secretaria.dto.response.MatriculaResponse;
+import com.escola.secretaria.dto.response.MatriculaStatsResponse;
 import com.escola.secretaria.dto.response.RematriculaJanelaResponse;
 import com.escola.secretaria.dto.response.RematriculadoResponse;
 import com.escola.secretaria.exception.RecursoNaoEncontradoException;
@@ -56,8 +57,27 @@ public class MatriculaService {
     }
 
     @Transactional(readOnly = true)
+    public MatriculaStatsResponse stats() {
+        int anoCorrente = LocalDate.now().getYear();
+        long total = matriculaRepository.countDistinctAlunoByAnoLetivo(anoCorrente);
+        long ativas = matriculaRepository.countByStatus(StatusMatricula.ATIVA);
+        long transferidas = matriculaRepository.countByStatus(StatusMatricula.TRANSFERIDO);
+        long canceladas = matriculaRepository.countByStatus(StatusMatricula.DESISTENTE);
+        return new MatriculaStatsResponse(total, ativas, transferidas, canceladas);
+    }
+
+    @Transactional(readOnly = true)
     public List<MatriculaResponse> findAll() {
         return matriculaRepository.findAll().stream()
+                .map(matriculaMapper::toResponse)
+                .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public List<MatriculaResponse> search(String q) {
+        if (q == null || q.isBlank()) return findAll();
+        String normalized = q.replace(".", "").replace("-", "").trim();
+        return matriculaRepository.search(normalized).stream()
                 .map(matriculaMapper::toResponse)
                 .toList();
     }

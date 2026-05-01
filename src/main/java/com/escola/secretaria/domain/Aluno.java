@@ -26,6 +26,8 @@ public class Aluno {
     private String email;
     private String telefone;
     private String telefoneResponsavel;
+    private String localNascimento;
+    private String nacionalidade;
 
     @Embedded
     private Endereco endereco;
@@ -45,7 +47,8 @@ public class Aluno {
         @AttributeOverride(name = "cpf",           column = @Column(name = "mae_cpf")),
         @AttributeOverride(name = "rg",            column = @Column(name = "mae_rg")),
         @AttributeOverride(name = "tituloEleitor", column = @Column(name = "mae_titulo_eleitor")),
-        @AttributeOverride(name = "telefone",      column = @Column(name = "mae_telefone"))
+        @AttributeOverride(name = "telefone",      column = @Column(name = "mae_telefone")),
+        @AttributeOverride(name = "profissao",     column = @Column(name = "mae_profissao"))
     })
     private Responsavel mae;
 
@@ -55,7 +58,8 @@ public class Aluno {
         @AttributeOverride(name = "cpf",           column = @Column(name = "pai_cpf")),
         @AttributeOverride(name = "rg",            column = @Column(name = "pai_rg")),
         @AttributeOverride(name = "tituloEleitor", column = @Column(name = "pai_titulo_eleitor")),
-        @AttributeOverride(name = "telefone",      column = @Column(name = "pai_telefone"))
+        @AttributeOverride(name = "telefone",      column = @Column(name = "pai_telefone")),
+        @AttributeOverride(name = "profissao",     column = @Column(name = "pai_profissao"))
     })
     private Responsavel pai;
 
@@ -65,7 +69,8 @@ public class Aluno {
         @AttributeOverride(name = "cpf",           column = @Column(name = "legal_cpf")),
         @AttributeOverride(name = "rg",            column = @Column(name = "legal_rg")),
         @AttributeOverride(name = "tituloEleitor", column = @Column(name = "legal_titulo_eleitor")),
-        @AttributeOverride(name = "telefone",      column = @Column(name = "legal_telefone"))
+        @AttributeOverride(name = "telefone",      column = @Column(name = "legal_telefone")),
+        @AttributeOverride(name = "profissao",     column = @Column(name = "legal_profissao"))
     })
     private Responsavel responsavelLegal;
 

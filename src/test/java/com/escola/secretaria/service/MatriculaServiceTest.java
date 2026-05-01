@@ -65,7 +65,8 @@ class MatriculaServiceTest {
                 });
         lenient().when(matriculaMapper.toResponse(any(Matricula.class)))
                 .thenReturn(new MatriculaResponse(
-                        anoCorrente, 20L, 10L, StatusMatricula.ATIVA, 1L));
+                        1L, anoCorrente, StatusMatricula.ATIVA,
+                        10L, null, null, 20L, null, null, null));
         lenient().when(matriculaRepository.save(any(Matricula.class)))
                 .thenAnswer(inv -> inv.getArgument(0));
         lenient().when(alunoRepository.save(any(Aluno.class)))

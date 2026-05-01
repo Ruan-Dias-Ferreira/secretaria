@@ -17,4 +17,5 @@ public class Responsavel {
     private String rg;
     private String tituloEleitor;
     private String telefone;
+    private String profissao;
 }

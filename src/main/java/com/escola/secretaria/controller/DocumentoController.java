@@ -1,7 +1,9 @@
 package com.escola.secretaria.controller;
 
+import com.escola.secretaria.domain.enums.TipoDocumento;
 import com.escola.secretaria.dto.request.DocumentoRequest;
 import com.escola.secretaria.dto.response.DocumentoResponse;
+import com.escola.secretaria.dto.response.DocumentoStatusResponse;
 import com.escola.secretaria.service.DocumentoService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -34,5 +36,17 @@ public class DocumentoController {
     public ResponseEntity<Void> delete(@PathVariable Long id){
         documentoService.delete(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/aluno/{alunoId}/status")
+    public ResponseEntity<List<DocumentoStatusResponse>> statusByAluno(@PathVariable Long alunoId) {
+        return ResponseEntity.ok(documentoService.statusByAluno(alunoId));
+    }
+
+    @PutMapping("/aluno/{alunoId}/tipo/{tipo}")
+    public ResponseEntity<DocumentoStatusResponse> toggle(@PathVariable Long alunoId,
+                                                         @PathVariable TipoDocumento tipo,
+                                                         @RequestParam boolean entregue) {
+        return ResponseEntity.ok(documentoService.toggle(alunoId, tipo, entregue));
     }
 }

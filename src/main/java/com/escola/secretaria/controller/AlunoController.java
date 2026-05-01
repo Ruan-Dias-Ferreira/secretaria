@@ -3,7 +3,9 @@ package com.escola.secretaria.controller;
 import com.escola.secretaria.dto.request.AlunoRequest;
 import com.escola.secretaria.dto.response.AlunoDetalheResponse;
 import com.escola.secretaria.dto.response.AlunoResponse;
+import com.escola.secretaria.dto.response.AlunoSituacaoResponse;
 import com.escola.secretaria.dto.response.FrequenciaResumoResponse;
+import com.escola.secretaria.dto.response.PendenciasResumoResponse;
 import com.escola.secretaria.service.AlunoService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -29,8 +31,9 @@ public class AlunoController {
     }
 
     @GetMapping
-    public ResponseEntity<List<AlunoResponse>> findAll() {
-        return ResponseEntity.ok(alunoService.findAll());
+    public ResponseEntity<List<AlunoResponse>> findAll(
+            @RequestParam(required = false) String search) {
+        return ResponseEntity.ok(alunoService.findAll(search));
     }
 
     @GetMapping("/{id}")
@@ -47,6 +50,16 @@ public class AlunoController {
     public ResponseEntity<AlunoResponse> update(@PathVariable Long id,
             @RequestBody @Valid AlunoRequest request) {
         return ResponseEntity.ok(alunoService.update(id, request));
+    }
+
+    @GetMapping("/{id}/situacao")
+    public ResponseEntity<AlunoSituacaoResponse> getSituacao(@PathVariable Long id) {
+        return ResponseEntity.ok(alunoService.getSituacao(id));
+    }
+
+    @GetMapping("/pendencias-resumo")
+    public ResponseEntity<PendenciasResumoResponse> pendenciasResumo() {
+        return ResponseEntity.ok(alunoService.getPendenciasResumo());
     }
 
     @DeleteMapping("/{id}")
