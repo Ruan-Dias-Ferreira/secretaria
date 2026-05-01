@@ -19,6 +19,11 @@ public class Frequencia {
     private Long id;
     private LocalDate data;
     private Boolean presente;
+
+    @Enumerated(EnumType.STRING)
+    @Column(length = 32)
+    private MotivoFalta motivo;
+
     @ManyToOne @JoinColumn(name = "aluno_id")
     private Aluno aluno;
     @ManyToOne @JoinColumn(name="disciplina_id")

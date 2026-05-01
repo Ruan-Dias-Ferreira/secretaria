@@ -1,0 +1,1 @@
+ALTER TABLE frequencia ADD COLUMN motivo VARCHAR(32);

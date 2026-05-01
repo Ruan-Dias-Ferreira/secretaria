@@ -2,7 +2,10 @@ package com.escola.secretaria.controller;
 
 import com.escola.secretaria.dto.request.MatriculaRequest;
 import com.escola.secretaria.dto.request.MatriculaStatusRequest;
+import com.escola.secretaria.dto.request.RematriculaRequest;
 import com.escola.secretaria.dto.response.MatriculaResponse;
+import com.escola.secretaria.dto.response.RematriculaJanelaResponse;
+import com.escola.secretaria.dto.response.RematriculadoResponse;
 import com.escola.secretaria.service.MatriculaService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -37,7 +40,8 @@ public class MatriculaController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<MatriculaResponse> update(@PathVariable Long id, @RequestBody @Valid MatriculaRequest request) {
+    public ResponseEntity<MatriculaResponse> update(@PathVariable Long id,
+                                                    @RequestBody @Valid MatriculaRequest request) {
         return ResponseEntity.ok(matriculaService.update(id, request));
     }
 
@@ -48,8 +52,37 @@ public class MatriculaController {
     }
 
     @PatchMapping("/{id}/status")
-    @PreAuthorize("hasRole('SECRETARIA')")
-    public ResponseEntity<MatriculaResponse> updateStatus(@PathVariable Long id, @RequestBody MatriculaStatusRequest request) {
+    public ResponseEntity<MatriculaResponse> updateStatus(@PathVariable Long id,
+                                                          @RequestBody MatriculaStatusRequest request) {
         return ResponseEntity.ok(matriculaService.updateStatus(id, request));
+    }
+
+    // ─── Rematrícula ───────────────────────────────────────────────────────
+
+    @GetMapping("/rematricula/janela")
+    public ResponseEntity<RematriculaJanelaResponse> getJanelaRematricula() {
+        return ResponseEntity.ok(matriculaService.getJanelaRematricula());
+    }
+
+    @GetMapping("/rematriculados")
+    public ResponseEntity<List<RematriculadoResponse>> findRematriculados() {
+        return ResponseEntity.ok(matriculaService.findRematriculados());
+    }
+
+    @PostMapping("/rematricula")
+    public ResponseEntity<MatriculaResponse> rematricular(@RequestBody @Valid RematriculaRequest request) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(matriculaService.rematricular(request));
+    }
+
+    @PutMapping("/rematricula/{alunoId}")
+    public ResponseEntity<MatriculaResponse> editarRematricula(@PathVariable Long alunoId,
+                                                               @RequestBody @Valid RematriculaRequest request) {
+        return ResponseEntity.ok(matriculaService.editarRematricula(alunoId, request));
+    }
+
+    @DeleteMapping("/rematricula/{alunoId}")
+    public ResponseEntity<Void> cancelarRematricula(@PathVariable Long alunoId) {
+        matriculaService.cancelarRematricula(alunoId);
+        return ResponseEntity.noContent().build();
     }
 }

@@ -9,25 +9,26 @@ import lombok.Setter;
 import java.time.LocalDate;
 
 @Entity
-@Table(name = "aluno")
+@Table(name = "evento")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Aluno {
+public class Evento {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String nome;
-    private String rg;
-    private String cpf;
-    private LocalDate dataNascimento;
-    private String email;
-    private String telefone;
-    private String endereco;
-    private String nomeMae;
-    private String nomePai;
 
-    @Embedded
-    private RematriculaInfo rematriculado;
+    @Column(nullable = false, unique = true)
+    private LocalDate data;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 32)
+    private TipoEvento tipo;
+
+    @Column(nullable = false)
+    private String titulo;
+
+    @Column(columnDefinition = "TEXT")
+    private String descricao;
 }
